@@ -2,440 +2,1091 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merry Christmas!</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASCII Christmas Tree</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+  }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            overflow: hidden;
-            background:
-                radial-gradient(ellipse at 50% 65%, #263b35 0%, #142820 38%, #091713 100%);
-            color: #fff4d6;
-            font-family: "Courier New", monospace;
-            text-align: center;
-        }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Courier New", monospace;
+  }
 
-        h1 {
-            position: relative;
-            z-index: 3;
-            margin-top: 35px;
-            font-size: clamp(25px, 5vw, 42px);
-            letter-spacing: 4px;
-            color: #f6e5b8;
-            text-shadow:
-                0 0 8px #d4a85a,
-                0 0 20px rgba(255, 190, 90, 0.4);
-            animation: titleGlow 3s infinite alternate;
-        }
+  .stage {
+    position: relative;
+    height: min(94vh, calc(94vw / 0.82));
+    aspect-ratio: 322 / 392;
+    transform-origin: 50% 100%;
+    animation: pop .95s cubic-bezier(.34, 1.56, .64, 1) both;
+    cursor: pointer;
+  }
 
-        @keyframes titleGlow {
-            from {
-                text-shadow: 0 0 8px #d4a85a;
-            }
-            to {
-                text-shadow: 0 0 15px #e6bb70,
-                             0 0 30px rgba(255, 190, 90, 0.5);
-            }
-        }
+  @keyframes pop {
+    0%   { transform: scale(.55) translateY(30px); opacity: 0; }
+    55%  { opacity: 1; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
 
-        #tree-container {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            width: 100%;
-            margin-top: 10px;
-        }
+  canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 
-        #tree {
-            white-space: pre;
-            font-family: "Courier New", monospace;
-            font-size: clamp(7px, 1.65vw, 17px);
-            font-weight: bold;
-            line-height: 1.08;
-            text-align: left;
-            color: #4eaa63;
-            text-shadow: 0 0 5px rgba(63, 180, 91, 0.4);
-        }
+  /* MUSIC BUTTON */
 
-        .branch {
-            color: #399455;
-        }
+  #musicToggle {
+    position: fixed;
+    z-index: 5;
+    top: 16px;
+    right: 16px;
+    padding: 9px 13px;
+    border: 1px solid rgba(243,212,106,.65);
+    border-radius: 4px;
+    background: rgba(0,0,0,.72);
+    color: #f3d46a;
+    font: 12px "Courier New", monospace;
+    letter-spacing: .08em;
+    cursor: pointer;
+  }
 
-        .dark-branch {
-            color: #286b43;
-        }
+  #musicToggle:hover {
+    background: rgba(70,49,15,.8);
+  }
 
-        .trunk {
-            color: #ad7950;
-        }
+  .caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 3%;
+    text-align: center;
+    color: #f3d46a;
+    letter-spacing: .25em;
+    font-size: clamp(11px, 2.4vh, 16px);
+    text-shadow: 0 0 6px #000, 0 0 12px #000,
+                 0 0 10px rgba(255,200,80,.5);
+    opacity: 0;
+    animation: fade 1.5s ease 2.4s forwards;
+    pointer-events: none;
+  }
 
-        .star {
-            color: #ffdc76;
-            text-shadow:
-                0 0 5px #fff0a0,
-                0 0 15px #ffc94d,
-                0 0 30px #ffae36;
-        }
+  .caption small {
+    display: block;
+    margin-top: .6em;
+    letter-spacing: .15em;
+    opacity: .6;
+    font-size: .72em;
+  }
 
-        .light {
-            display: inline-block;
-            animation: bulbGlow var(--speed) ease-in-out infinite alternate;
-            animation-delay: var(--delay);
-        }
+  @keyframes fade {
+    to { opacity: .95; }
+  }
 
-        .red {
-            color: #ff5353;
-            text-shadow: 0 0 5px #ff3333, 0 0 12px #ff3333;
-        }
-
-        .yellow {
-            color: #ffe17a;
-            text-shadow: 0 0 6px #ffdb55, 0 0 14px #ffca35;
-        }
-
-        .blue {
-            color: #72caff;
-            text-shadow: 0 0 6px #55baff, 0 0 14px #55baff;
-        }
-
-        .orange {
-            color: #ffa85b;
-            text-shadow: 0 0 6px #ff9933, 0 0 14px #ff8833;
-        }
-
-        .green {
-            color: #91ed83;
-            text-shadow: 0 0 6px #66ee55, 0 0 14px #66ee55;
-        }
-
-        @keyframes bulbGlow {
-            0% {
-                opacity: 0.55;
-                filter: brightness(0.7);
-            }
-            100% {
-                opacity: 1;
-                filter: brightness(1.5);
-            }
-        }
-
-        #message {
-            position: relative;
-            z-index: 3;
-            margin-top: 20px;
-            font-size: clamp(12px, 2vw, 17px);
-            letter-spacing: 2px;
-            color: #e9d8b0;
-            text-shadow: 0 0 10px rgba(255, 218, 155, 0.5);
-        }
-
-        #snow {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .ground-glow {
-            position: fixed;
-            bottom: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 450px;
-            height: 180px;
-            background: rgba(255, 202, 120, 0.07);
-            filter: blur(60px);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        @media (max-width: 500px) {
-            h1 {
-                margin-top: 45px;
-            }
-
-            #tree {
-                font-size: clamp(6px, 1.75vw, 9px);
-            }
-
-            #message {
-                margin-top: 15px;
-                letter-spacing: 1px;
-            }
-        }
-    </style>
+</style>
 </head>
 
 <body>
 
-    <canvas id="snow"></canvas>
+<button id="musicToggle" type="button" aria-pressed="false">
+  ♪ MUSIC: OFF
+</button>
 
-    <h1>MERRY CHRISTMAS</h1>
+<div class="stage" id="stage">
+  <canvas id="view"></canvas>
+  <div class="caption">
+    MERRY CHRISTMAS
+    <small>tap to replay</small>
+  </div>
+</div>
 
-    <div id="tree-container">
-        <div id="tree"></div>
-    </div>
+<script>
+(function () {
 
-    <div id="message">
-        ✦ Wishing You a Wonderful Christmas ✦
-    </div>
+  var stage = document.getElementById('stage');
+  var view  = document.getElementById('view');
+  var vctx  = view.getContext('2d');
+  var off   = document.createElement('canvas');
+  var octx  = off.getContext('2d', { willReadFrequently: true });
 
-    <div class="ground-glow"></div>
 
-    <script>
+  // ==========================================
+  // ASCII SETTINGS
+  // ==========================================
 
-        // ==========================================
-        // CHRISTMAS TREE DESIGN
-        // ==========================================
+  // Monospace keeps characters aligned and crisp.
+  var FONT = '"Times New Roman", monospace';
 
-        const tree = document.getElementById("tree");
+  var RAMP = '  .,+*##%%@@';
 
-        const height = 25;
-        const width = height * 2 - 1;
+  // More columns = finer ASCII detail.
+  var TARGET_COLS = 90;
 
-        const bulbs = [
-            "red",
-            "yellow",
-            "blue",
-            "orange",
-            "green"
-        ];
+  // LIGHT FLICKER CONTROL
+  // 0 = no flicker
+  // 0.15 = subtle
+  // 0.35 = noticeable
+  // 0.65 = strong
+  var FLICKER_AMOUNT = 0.7;
 
-        let rows = [];
 
-        function createTree() {
+  // ==========================================
+  // SEEDED RANDOM
+  // ==========================================
 
-            rows = [];
+  function rng(seed) {
+    return function () {
+      seed |= 0;
+      seed = seed + 0x6D2B79F5 | 0;
 
-            // Tree star
-            rows.push(
-                ' '.repeat(height - 1) +
-                '<span class="star">✦</span>'
-            );
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
 
-            // Tree branches
-            for (let i = 1; i <= height; i++) {
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
 
-                let row = "";
+  var R = rng(11);
 
-                let spaces = height - i;
 
-                row += " ".repeat(spaces);
+  // ==========================================
+  // TREE DESCRIPTION
+  // ==========================================
 
-                for (let j = 0; j < (i * 2 - 1); j++) {
+  var CX = 0.5;
 
-                    let random = Math.random();
+  var tiers = [
+    { top: .215, base: .345, hw: .105 },
+    { top: .295, base: .455, hw: .165 },
+    { top: .385, base: .565, hw: .215 },
+    { top: .475, base: .665, hw: .265 },
+    { top: .565, base: .750, hw: .315 }
+  ];
 
-                    if (random < 0.075) {
+  var GREENS = [
+    '#9fd43c', '#5fbf45', '#c9e24a',
+    '#3d9b3f', '#e6e04f', '#78c840'
+  ];
 
-                        let color = bulbs[
-                            Math.floor(Math.random() * bulbs.length)
-                        ];
+  var LIGHTS = [
+    '#ffd84a', '#ff8a4a', '#ff6fa8',
+    '#a97bff', '#6fd0ff'
+  ];
 
-                        let delay = (Math.random() * 2).toFixed(2);
-                        let speed = (0.7 + Math.random() * 1.8).toFixed(2);
+  var PAL = [
+    '#ff5fa8', '#b87bff', '#4fa8ff',
+    '#ffa13c', '#ffe14a', '#4fe3c1'
+  ];
 
-                        row += `<span class="light ${color}"
-                            style="--delay:${delay}s; --speed:${speed}s">●</span>`;
+  var BALLS = [
+    '#ff3b30', '#ff8a1f', '#ff4f9a', '#ff3b30'
+  ];
 
-                    } else if (random < 0.17) {
 
-                        row += '<span class="dark-branch">✦</span>';
+  tiers.forEach(function (t, i) {
 
-                    } else if (random < 0.35) {
+    t.dots = [];
 
-                        row += '<span class="branch">+</span>';
+    var n = 170 + i * 55;
 
-                    } else {
+    for (var k = 0; k < n; k++) {
 
-                        row += '<span class="branch">*</span>';
-                    }
-                }
+      var fy = t.top + R() * (t.base - t.top);
+      var w = t.hw * (fy - t.top) / (t.base - t.top);
 
-                rows.push(row);
+      t.dots.push({
+        fx: CX + (R() * 2 - 1) * w * 0.96,
+        fy: fy,
+        c: GREENS[(R() * GREENS.length) | 0],
+        s: .7 + R() * .9,
+        tw: R() < .22 ? R() * 6.28 : -1,
+        lc: LIGHTS[(R() * LIGHTS.length) | 0]
+      });
+    }
+  });
+
+
+  // ==========================================
+  // LAYOUT STATE
+  // ==========================================
+
+  var W, H, dpr, cols, rows, cw, ch, fs, vw, vh, offX;
+
+  var hashv, lumGrid, stars = [], flakes = [];
+
+
+  function setup() {
+
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+
+    W = stage.clientWidth;
+    H = stage.clientHeight;
+
+    view.width = Math.round(W * dpr);
+    view.height = Math.round(H * dpr);
+
+    vctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    vctx.font = '700 10px ' + FONT;
+
+    var w10 = vctx.measureText('M').width / 10;
+
+    fs = (W / TARGET_COLS) / w10;
+
+    vctx.font = '700 ' + fs + 'px ' + FONT;
+
+    cw = vctx.measureText('M').width;
+    ch = fs * 0.92;
+
+    cols = Math.floor(W / cw);
+    rows = Math.floor(H / ch);
+
+    offX = (W - cols * cw) / 2;
+
+    off.width = cols;
+    off.height = rows;
+
+    vw = cols;
+    vh = rows * ch / cw;
+
+    octx.setTransform(1, 0, 0, rows / vh, 0, 0);
+
+    var r2 = rng(5);
+
+    hashv = new Float32Array(cols * rows);
+    lumGrid = new Float32Array(cols * rows);
+
+    for (var y = 0; y < rows; y++) {
+      for (var x = 0; x < cols; x++) {
+
+        hashv[y * cols + x] =
+          r2() * .7 + (1 - y / rows) * .3;
+
+      }
+    }
+
+    stars = [];
+
+    for (var s = 0; s < 75; s++) {
+
+      stars.push({
+        c: (r2() * cols) | 0,
+        r: (r2() * rows * .72) | 0,
+        ph: r2() * 6.28,
+        sp: 1 + r2() * 2.5
+      });
+
+    }
+
+    flakes = [];
+
+    for (var f = 0; f < 45; f++) {
+
+      flakes.push({
+        x: r2() * cols,
+        y: r2() * rows,
+        vy: 2.5 + r2() * 5,
+        ph: r2() * 6.28,
+        big: r2() < .3
+      });
+
+    }
+  }
+
+
+  // ==========================================
+  // TREE TIER GEOMETRY
+  // ==========================================
+
+  function tierPath(c, t, dx) {
+
+    var hwp = t.hw * vw;
+    var cxp = CX * vw + dx;
+
+    var bx0 = cxp - hwp;
+    var bx1 = cxp + hwp;
+
+    var ymid = (t.top + (t.base - t.top) * .55) * vh;
+
+    var n = 6;
+    var step = (bx1 - bx0) / n;
+
+    c.beginPath();
+
+    c.moveTo(cxp, t.top * vh);
+
+    c.quadraticCurveTo(cxp + hwp * .72, ymid, bx1, t.base * vh);
+
+    for (var k = 0; k < n; k++) {
+
+      var xa = bx1 - step * k;
+      var xb = xa - step;
+
+      c.quadraticCurveTo(
+        (xa + xb) / 2,
+        t.base * vh + vh * .035,
+        xb,
+        t.base * vh
+      );
+
+    }
+
+    c.quadraticCurveTo(cxp - hwp * .72, ymid, cxp, t.top * vh);
+
+    c.closePath();
+
+    return { bx1: bx1, step: step, n: n };
+  }
+
+
+  // ==========================================
+  // TREE STAR
+  // ==========================================
+
+  function drawStar(c, t) {
+
+    var x = CX * vw;
+    var y = .165 * vh;
+
+    var p = .5 + .5 * Math.sin(t * 2.2);
+
+    c.strokeStyle = '#ffe9a0';
+    c.lineCap = 'round';
+
+    var L = 13 + p * 4;
+
+    c.lineWidth = .7;
+    c.beginPath();
+
+    c.moveTo(x, y - L);
+    c.lineTo(x, y + L * .9);
+
+    c.moveTo(x - L * .8, y);
+    c.lineTo(x + L * .8, y);
+
+    c.stroke();
+
+    var d = L * .45;
+
+    c.lineWidth = .45;
+    c.beginPath();
+
+    c.moveTo(x - d, y - d);
+    c.lineTo(x + d, y + d);
+
+    c.moveTo(x + d, y - d);
+    c.lineTo(x - d, y + d);
+
+    c.stroke();
+
+    c.fillStyle = '#fffbe0';
+    c.beginPath();
+
+    for (var i = 0; i < 10; i++) {
+
+      var ang = -Math.PI / 2 + i * Math.PI / 5;
+      var rad = i % 2 ? 1.1 : 2.6;
+
+      c[i ? 'lineTo' : 'moveTo'](
+        x + Math.cos(ang) * rad,
+        y + Math.sin(ang) * rad
+      );
+
+    }
+
+    c.closePath();
+    c.fill();
+  }
+
+
+  // ==========================================
+  // SCENE DRAWING
+  // ==========================================
+
+  function drawScene(c, t) {
+
+    c.save();
+
+    // Solid background to avoid soft gradient shading.
+    c.fillStyle = '#363d57';
+    c.fillRect(0, 0, vw, vh);
+
+
+    // TRUNK
+
+    var tx = (CX - .04) * vw;
+    var tw = .08 * vw;
+    var ty = .745 * vh;
+    var th = .09 * vh;
+
+    c.fillStyle = '#4a3a24';
+    c.fillRect(tx, ty, tw, th);
+
+    c.fillStyle = '#241a0f';
+
+    for (var s = 1; s < 5; s++) {
+      c.fillRect(tx + tw * s / 5, ty, .7, th);
+    }
+
+
+
+    // ==========================================
+    // TREE TIERS - 3D SHADING AND DEPTH
+    // ==========================================
+
+    for (var i = tiers.length - 1; i >= 0; i--) {
+
+      var T = tiers[i];
+
+      var dx = Math.sin(t * .8 + i) * .18;
+
+      var cxp = CX * vw + dx;
+      var hwp = T.hw * vw;
+
+      // ------------------------------------------
+      // 1. DARK SHADOW BEHIND EACH BRANCH LAYER
+      // ------------------------------------------
+
+      c.save();
+
+      c.translate(1.5, 1.5);
+
+      tierPath(c, T, dx);
+
+      c.fillStyle = '#102718';
+      c.fill();
+
+      c.restore();
+
+
+      // ------------------------------------------
+      // 2. MAIN TREE SHAPE WITH 3D LIGHTING
+      // ------------------------------------------
+
+      var geo = tierPath(c, T, dx);
+
+      var gr = c.createLinearGradient(
+        cxp - hwp,
+        0,
+        cxp + hwp,
+        0
+      );
+
+      // Left side: darker shadow
+      gr.addColorStop(0, '#174b27');
+
+      // Left-center: illuminated branches
+      gr.addColorStop(.22, '#438c32');
+
+      // Center: warm green lighting
+      gr.addColorStop(.48, '#a4d34a');
+
+      // Right-center: natural shadow
+      gr.addColorStop(.72, '#4e9631');
+
+      // Right edge: deep shadow
+      gr.addColorStop(1, '#173e21');
+
+      c.fillStyle = gr;
+      c.fill();
+
+      c.strokeStyle = '#102d19';
+      c.lineWidth = 1.1;
+      c.stroke();
+
+
+      // ------------------------------------------
+      // 3. BRANCH TEXTURE AND DEPTH
+      // ------------------------------------------
+
+      c.save();
+
+      c.globalAlpha = .3;
+      c.lineWidth = .65;
+
+      for (var b = 1; b <= 5; b++) {
+
+        var fraction = b / 6;
+
+        var branchY =
+          (T.top + (T.base - T.top) * fraction) * vh;
+
+        var branchWidth =
+          hwp * fraction;
+
+        // Illuminated left branches
+        c.strokeStyle = '#c0e879';
+
+        c.beginPath();
+        c.moveTo(cxp, branchY - vh * .025);
+        c.lineTo(cxp - branchWidth * .85, branchY + vh * .018);
+        c.stroke();
+
+        // Darker right branches
+        c.strokeStyle = '#092b18';
+
+        c.beginPath();
+        c.moveTo(cxp, branchY - vh * .025);
+        c.lineTo(cxp + branchWidth * .85, branchY + vh * .018);
+        c.stroke();
+      }
+
+      c.restore();
+
+
+      // ------------------------------------------
+      // 4. LEAVES AND TWINKLING LIGHTS
+      // ------------------------------------------
+
+      for (var k = 0; k < T.dots.length; k++) {
+
+        var d = T.dots[k];
+
+        var x = d.fx * vw + dx;
+        var y = d.fy * vh;
+
+        if (d.tw >= 0) {
+
+          c.globalAlpha =
+            1 - FLICKER_AMOUNT *
+            (.5 - .5 * Math.sin(t * 2.4 + d.tw));
+
+          c.fillStyle = d.lc;
+
+          c.fillRect(
+            x - d.s * .65,
+            y - d.s * .65,
+            d.s * 1.3,
+            d.s * 1.3
+          );
+
+        } else {
+
+          c.globalAlpha = 1;
+          c.fillStyle = d.c;
+
+          c.fillRect(
+            x - d.s / 2,
+            y - d.s / 2,
+            d.s,
+            d.s
+          );
+
+        }
+      }
+
+      c.globalAlpha = 1;
+
+
+      // ------------------------------------------
+      // 5. RAINBOW GARLAND
+      // ------------------------------------------
+
+      var fy = T.top + (T.base - T.top) * .62;
+
+      var w =
+        T.hw * (fy - T.top) /
+        (T.base - T.top) * vw * .96;
+
+      var x0 = cxp - w;
+      var x1 = cxp + w;
+
+      var y0 = fy * vh;
+      var sag = vh * .07;
+
+      var M = Math.max(10, Math.round(w / 1.15));
+      var shift = Math.floor(t * 3);
+
+      for (var m = 0; m <= M; m++) {
+
+        var u = m / M;
+        var iu = 1 - u;
+
+        var gx =
+          iu * iu * x0 +
+          2 * iu * u * cxp +
+          u * u * x1;
+
+        var gy2 =
+          iu * iu * y0 +
+          2 * iu * u * (y0 + sag) +
+          u * u * y0;
+
+        c.fillStyle = PAL[(m + shift) % PAL.length];
+
+        c.fillRect(gx - .95, gy2 - .95, 1.9, 1.9);
+      }
+
+
+      // ------------------------------------------
+      // 6. 3D CHRISTMAS ORNAMENTS
+      // ------------------------------------------
+
+      for (var q = 0; q < geo.n; q++) {
+
+        if ((q + i) % 2) continue;
+
+        var ox = geo.bx1 - geo.step * (q + .5);
+
+        var oy =
+          T.base * vh + vh * .017 +
+          1.2 + Math.sin(t * 1.6 + q + i) * .25;
+
+        var ballColor = BALLS[(q + i) % BALLS.length];
+
+        // Dark outline
+        c.fillStyle = '#261b18';
+
+        c.beginPath();
+        c.arc(ox + .3, oy + .3, 1.8, 0, 6.2832);
+        c.fill();
+
+        // Colored spherical gradient
+        var ball = c.createRadialGradient(
+          ox - .45, oy - .55, .1,
+          ox, oy, 1.7
+        );
+
+        ball.addColorStop(0, '#ffffff');
+        ball.addColorStop(.2, ballColor);
+        ball.addColorStop(1, '#301c22');
+
+        c.fillStyle = ball;
+
+        c.beginPath();
+        c.arc(ox, oy, 1.55, 0, 6.2832);
+        c.fill();
+
+        // Small reflective highlight
+        c.fillStyle = 'rgba(255,255,255,.8)';
+
+        c.fillRect(ox - .7, oy - .75, .55, .55);
+      }
+    }
+
+    drawStar(c, t);
+
+
+    c.restore();
+  }
+
+
+  // ==========================================
+  // ASCII CONVERSION AND ANIMATION
+  // ==========================================
+
+  var t0 = performance.now();
+  var last = 0;
+
+  function frame(now) {
+
+    requestAnimationFrame(frame);
+
+    if (now - last < 33) return;
+
+    var dt = Math.min(.1, (now - last) / 1000);
+    last = now;
+
+    var t = (now - t0) / 1000;
+    var p = Math.min(1, t / 2.6);
+
+    drawScene(octx, t);
+
+    var data = octx.getImageData(
+      0, 0, cols, rows
+    ).data;
+
+    vctx.fillStyle = '#000';
+    vctx.fillRect(0, 0, W, H);
+
+    vctx.font = '700 ' + fs + 'px ' + FONT;
+    vctx.textBaseline = 'middle';
+    vctx.textAlign = 'left';
+
+    var prev = '';
+    var n = RAMP.length;
+
+    for (var r = 0; r < rows; r++) {
+
+      for (var c = 0; c < cols; c++) {
+
+        var i = r * cols + c;
+        var o = i * 4;
+
+        var R_ = data[o];
+        var G_ = data[o + 1];
+        var B_ = data[o + 2];
+
+        var lum = (
+          .299 * R_ + .587 * G_ + .114 * B_
+        ) / 255;
+
+        lumGrid[i] = lum;
+
+        if (lum < .045) continue;
+
+        var glyph;
+
+        if (p < 1) {
+
+          var h = hashv[i];
+
+          if (h > p) {
+
+            if (h < p + .1 && lum > .06) {
+              glyph = RAMP[
+                1 + ((Math.random() * (n - 2)) | 0)
+              ];
+            } else {
+              continue;
             }
-
-            // Decorative bottom branches
-            rows.push(
-                " ".repeat(height - 3) +
-                '<span class="branch">/^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\</span>'
-            );
-
-            // Tree trunk
-            rows.push(
-                " ".repeat(height - 2) +
-                '<span class="trunk">|||||||</span>'
-            );
-
-            rows.push(
-                " ".repeat(height - 2) +
-                '<span class="trunk">|||||||</span>'
-            );
-
-            // Tree base
-            rows.push(
-                " ".repeat(height - 4) +
-                '<span class="trunk">[===============]</span>'
-            );
+          }
         }
 
+        if (!glyph) {
 
-        // ==========================================
-        // TREE BUILD ANIMATION
-        // ==========================================
+          var idx = Math.min(
+            n - 1,
+            Math.floor(Math.pow(lum, .8) * n * 1.15)
+          );
 
-        function buildTree() {
+          if (idx < 1) idx = 1;
 
-            tree.innerHTML = "";
-
-            let currentRow = rows.length - 1;
-
-            function addRow() {
-
-                if (currentRow < 0) {
-                    return;
-                }
-
-                const row = rows[currentRow];
-
-                const line = document.createElement("div");
-
-                line.innerHTML = row;
-
-                line.style.opacity = "0";
-                line.style.transform = "rotateX(90deg) scale(0.2)";
-                line.style.transformOrigin = "center center";
-                line.style.transition =
-                    "opacity 0.45s ease, transform 0.65s cubic-bezier(.2,.8,.3,1)";
-
-                tree.prepend(line);
-
-                requestAnimationFrame(() => {
-
-                    line.style.opacity = "1";
-                    line.style.transform = "rotateX(0deg) scale(1)";
-
-                });
-
-                currentRow--;
-
-                setTimeout(addRow, 85);
-            }
-
-            addRow();
+          glyph = RAMP[idx];
         }
 
+        var mx = Math.max(R_, G_, B_);
 
-        createTree();
-        buildTree();
+        var b = Math.min(1, .25 + lum * 1.6);
+        var k2 = 255 / mx * b;
 
+        var col = 'rgb(' +
+          (R_ * k2 | 0) + ',' +
+          (G_ * k2 | 0) + ',' +
+          (B_ * k2 | 0) + ')';
 
-        // ==========================================
-        // FALLING PIXEL SNOW
-        // ==========================================
-
-        const canvas = document.getElementById("snow");
-        const ctx = canvas.getContext("2d");
-
-        let snowflakes = [];
-
-        function resizeCanvas() {
-
-            const ratio = window.devicePixelRatio || 1;
-
-            canvas.width = window.innerWidth * ratio;
-            canvas.height = window.innerHeight * ratio;
-
-            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        if (col !== prev) {
+          vctx.fillStyle = col;
+          prev = col;
         }
 
-        window.addEventListener("resize", resizeCanvas);
+        vctx.fillText(
+          glyph,
+          offX + c * cw,
+          r * ch + ch / 2
+        );
+      }
+    }
 
-        resizeCanvas();
 
-        function createSnow() {
+    // TWINKLING STARS
 
-            snowflakes = [];
+    for (var s = 0; s < stars.length; s++) {
 
-            for (let i = 0; i < 130; i++) {
+      var st = stars[s];
 
-                snowflakes.push({
+      if (lumGrid[st.r * cols + st.c] > .06) continue;
 
-                    x: Math.random() * window.innerWidth,
-                    y: Math.random() * window.innerHeight,
+      var v = .5 + .5 * Math.sin(t * st.sp + st.ph);
 
-                    size: Math.random() * 2 + 1,
+      vctx.fillStyle =
+        'rgba(255,255,255,' +
+        (.35 + .65 * v).toFixed(2) + ')';
 
-                    speed: Math.random() * 0.45 + 0.2,
+      vctx.fillText(
+        v > .85 ? '*' : v > .5 ? '+' : '.',
+        offX + st.c * cw,
+        st.r * ch + ch / 2
+      );
+    }
 
-                    drift: Math.random() * 0.3 - 0.15,
 
-                    opacity: Math.random() * 0.55 + 0.25
+    // FALLING SNOW
 
-                });
-            }
-        }
+    vctx.fillStyle = 'rgba(255,255,255,.85)';
 
-        createSnow();
+    for (var f = 0; f < flakes.length; f++) {
 
-        function animateSnow() {
+      var fl = flakes[f];
 
-            ctx.clearRect(
-                0,
-                0,
-                window.innerWidth,
-                window.innerHeight
-            );
+      fl.y += fl.vy * dt;
+      fl.x += Math.sin(t * .9 + fl.ph) * 1.2 * dt;
 
-            snowflakes.forEach(flake => {
+      if (fl.y > rows) {
+        fl.y = -1;
+        fl.x = Math.random() * cols;
+      }
 
-                ctx.fillStyle =
-                    `rgba(255, 250, 235, ${flake.opacity})`;
+      var fc = Math.floor(fl.x);
+      var fr = Math.floor(fl.y);
 
-                ctx.fillRect(
-                    Math.round(flake.x),
-                    Math.round(flake.y),
-                    flake.size,
-                    flake.size
-                );
+      if (fc < 0 || fc >= cols || fr < 0 || fr >= rows) continue;
 
-                flake.y += flake.speed;
-                flake.x += flake.drift;
+      vctx.fillText(
+        fl.big ? '*' : '.',
+        offX + fc * cw,
+        fr * ch + ch / 2
+      );
+    }
+  }
 
-                if (flake.y > window.innerHeight) {
 
-                    flake.y = -5;
-                    flake.x = Math.random() * window.innerWidth;
+  // ==========================================
+  // REPLAY ANIMATION
+  // ==========================================
 
-                }
+  stage.addEventListener('click', function () {
 
-                if (flake.x > window.innerWidth) {
-                    flake.x = 0;
-                }
+    stage.style.animation = 'none';
+    void stage.offsetWidth;
+    stage.style.animation = '';
 
-                if (flake.x < 0) {
-                    flake.x = window.innerWidth;
-                }
+    t0 = performance.now();
 
-            });
+    var cap = stage.querySelector('.caption');
 
-            requestAnimationFrame(animateSnow);
-        }
+    cap.style.animation = 'none';
+    void cap.offsetWidth;
+    cap.style.animation = '';
+  });
 
-        animateSnow();
 
-    </script>
+  // ==========================================
+  // CHRISTMAS MUSIC
+  // ==========================================
+
+  // Original looping bell melody.
+  // Audio starts only after the visitor presses the music button.
+
+  var musicButton = document.getElementById('musicToggle');
+
+  var audioContext = null;
+  var musicOn = false;
+  var musicRun = 0;
+
+
+  // ==========================================
+  // CHRISTMAS MUSIC
+  // ==========================================
+
+  // Note frequencies
+  var NOTES = {
+    C5: 523.25,
+    D5: 587.33,
+    E5: 659.25,
+    F5: 698.46,
+    G5: 783.99
+  };
+
+  // Jingle Bells melody
+  var melody = [
+
+    // Jingle bells, jingle bells
+    [NOTES.E5, .32],
+    [NOTES.E5, .32],
+    [NOTES.E5, .65],
+
+    [NOTES.E5, .32],
+    [NOTES.E5, .32],
+    [NOTES.E5, .65],
+
+    // Jingle all the way
+    [NOTES.E5, .32],
+    [NOTES.G5, .32],
+    [NOTES.C5, .42],
+    [NOTES.D5, .42],
+    [NOTES.E5, .85],
+
+    // Oh what fun it is to ride
+    [NOTES.F5, .32],
+    [NOTES.F5, .32],
+    [NOTES.F5, .32],
+    [NOTES.F5, .32],
+    [NOTES.F5, .32],
+
+    [NOTES.E5, .32],
+    [NOTES.E5, .32],
+    [NOTES.E5, .32],
+    [NOTES.E5, .32],
+
+    // In a one horse open sleigh
+    [NOTES.D5, .32],
+    [NOTES.D5, .32],
+    [NOTES.E5, .32],
+    [NOTES.D5, .65],
+    [NOTES.G5, .85]
+
+  ];
+
+
+
+  // PLAY A BELL NOTE
+
+  function playBell(frequency, duration) {
+
+    var now = audioContext.currentTime;
+
+    var oscillator = audioContext.createOscillator();
+    var gain = audioContext.createGain();
+
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(frequency, now);
+
+    gain.gain.setValueAtTime(0.0001, now);
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.30,
+      now + 0.025
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      now + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start(now);
+    oscillator.stop(now + duration + 0.03);
+
+
+    // Quiet octave overtone for a bell-like sound.
+
+    var overtone = audioContext.createOscillator();
+    var overtoneGain = audioContext.createGain();
+
+    overtone.type = 'sine';
+
+    overtone.frequency.setValueAtTime(
+      frequency * 2,
+      now
+    );
+
+    overtoneGain.gain.setValueAtTime(0.0001, now);
+
+    overtoneGain.gain.exponentialRampToValueAtTime(
+      0.025,
+      now + 0.02
+    );
+
+    overtoneGain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      now + duration * 0.65
+    );
+
+    overtone.connect(overtoneGain);
+    overtoneGain.connect(audioContext.destination);
+
+    overtone.start(now);
+    overtone.stop(now + duration * 0.7);
+  }
+
+
+  // WAIT BETWEEN NOTES
+
+  function wait(ms) {
+
+    return new Promise(function (resolve) {
+      setTimeout(resolve, ms);
+    });
+
+  }
+
+
+  // LOOP THE MELODY
+
+  async function playMelody(runId) {
+
+    while (musicOn && runId === musicRun) {
+
+      for (var i = 0; i < melody.length; i++) {
+
+        if (!musicOn || runId !== musicRun) return;
+
+        var note = melody[i];
+
+        playBell(note[0], note[1]);
+
+        await wait(note[1] * 1000 + 90);
+      }
+
+      await wait(350);
+    }
+  }
+
+
+  // MUSIC BUTTON TOGGLE
+
+  musicButton.addEventListener('click', async function (event) {
+
+    event.stopPropagation();
+
+    if (!audioContext) {
+
+      var AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) {
+        musicButton.textContent = '♪ AUDIO UNSUPPORTED';
+        return;
+      }
+
+      audioContext = new AudioContextClass();
+    }
+
+    if (musicOn) {
+
+      musicOn = false;
+      musicRun++;
+
+      musicButton.textContent = '♪ MUSIC: OFF';
+
+      musicButton.setAttribute('aria-pressed', 'false');
+
+    } else {
+
+      await audioContext.resume();
+
+      musicOn = true;
+      musicRun++;
+
+      musicButton.textContent = '♪ MUSIC: ON';
+
+      musicButton.setAttribute('aria-pressed', 'true');
+
+      playMelody(musicRun);
+    }
+
+  });
+
+
+  // ==========================================
+  // INITIALIZE
+  // ==========================================
+
+  setup();
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(setup).observe(stage);
+  } else {
+    window.addEventListener('resize', setup);
+  }
+
+  requestAnimationFrame(frame);
+
+})();
+</script>
 
 </body>
 </html>
