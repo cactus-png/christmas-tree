@@ -7,60 +7,135 @@
     <title>Merry Christmas!</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            padding: 0;
-            background: radial-gradient(circle, #102c35, #06131c);
-            color: white;
-            font-family: monospace;
-            text-align: center;
             min-height: 100vh;
             overflow: hidden;
+            background:
+                radial-gradient(ellipse at 50% 65%, #263b35 0%, #142820 38%, #091713 100%);
+            color: #fff4d6;
+            font-family: "Courier New", monospace;
+            text-align: center;
         }
 
         h1 {
+            position: relative;
+            z-index: 3;
             margin-top: 35px;
-            color: #e8f5e9;
-            font-size: clamp(24px, 5vw, 42px);
-            text-shadow: 0 0 15px #8cffb0;
+            font-size: clamp(25px, 5vw, 42px);
+            letter-spacing: 4px;
+            color: #f6e5b8;
+            text-shadow:
+                0 0 8px #d4a85a,
+                0 0 20px rgba(255, 190, 90, 0.4);
+            animation: titleGlow 3s infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 8px #d4a85a;
+            }
+            to {
+                text-shadow: 0 0 15px #e6bb70,
+                             0 0 30px rgba(255, 190, 90, 0.5);
+            }
+        }
+
+        #tree-container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            margin-top: 10px;
         }
 
         #tree {
-            position: relative;
-            z-index: 1;
             white-space: pre;
-            font-size: clamp(10px, 2.5vw, 20px);
-            line-height: 1.15;
-            color: #36c66b;
-            text-shadow: 0 0 8px #20a84e;
-            margin-top: 20px;
+            font-family: "Courier New", monospace;
+            font-size: clamp(7px, 1.65vw, 17px);
+            font-weight: bold;
+            line-height: 1.08;
+            text-align: left;
+            color: #4eaa63;
+            text-shadow: 0 0 5px rgba(63, 180, 91, 0.4);
+        }
+
+        .branch {
+            color: #399455;
+        }
+
+        .dark-branch {
+            color: #286b43;
+        }
+
+        .trunk {
+            color: #ad7950;
         }
 
         .star {
-            color: gold;
-            text-shadow: 0 0 15px yellow;
-            animation: glow 1s infinite alternate;
+            color: #ffdc76;
+            text-shadow:
+                0 0 5px #fff0a0,
+                0 0 15px #ffc94d,
+                0 0 30px #ffae36;
         }
 
         .light {
-            animation: blink 1s infinite alternate;
+            display: inline-block;
+            animation: bulbGlow var(--speed) ease-in-out infinite alternate;
+            animation-delay: var(--delay);
         }
 
-        @keyframes blink {
-            from { opacity: 0.3; }
-            to { opacity: 1; }
+        .red {
+            color: #ff5353;
+            text-shadow: 0 0 5px #ff3333, 0 0 12px #ff3333;
         }
 
-        @keyframes glow {
-            from { opacity: 0.5; }
-            to { opacity: 1; }
+        .yellow {
+            color: #ffe17a;
+            text-shadow: 0 0 6px #ffdb55, 0 0 14px #ffca35;
+        }
+
+        .blue {
+            color: #72caff;
+            text-shadow: 0 0 6px #55baff, 0 0 14px #55baff;
+        }
+
+        .orange {
+            color: #ffa85b;
+            text-shadow: 0 0 6px #ff9933, 0 0 14px #ff8833;
+        }
+
+        .green {
+            color: #91ed83;
+            text-shadow: 0 0 6px #66ee55, 0 0 14px #66ee55;
+        }
+
+        @keyframes bulbGlow {
+            0% {
+                opacity: 0.55;
+                filter: brightness(0.7);
+            }
+            100% {
+                opacity: 1;
+                filter: brightness(1.5);
+            }
         }
 
         #message {
-            margin-top: 25px;
-            font-size: 18px;
-            color: #d8e9ef;
-            text-shadow: 0 0 10px white;
+            position: relative;
+            z-index: 3;
+            margin-top: 20px;
+            font-size: clamp(12px, 2vw, 17px);
+            letter-spacing: 2px;
+            color: #e9d8b0;
+            text-shadow: 0 0 10px rgba(255, 218, 155, 0.5);
         }
 
         #snow {
@@ -71,6 +146,34 @@
             pointer-events: none;
             z-index: 2;
         }
+
+        .ground-glow {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 450px;
+            height: 180px;
+            background: rgba(255, 202, 120, 0.07);
+            filter: blur(60px);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        @media (max-width: 500px) {
+            h1 {
+                margin-top: 45px;
+            }
+
+            #tree {
+                font-size: clamp(6px, 1.75vw, 9px);
+            }
+
+            #message {
+                margin-top: 15px;
+                letter-spacing: 1px;
+            }
+        }
     </style>
 </head>
 
@@ -78,62 +181,169 @@
 
     <canvas id="snow"></canvas>
 
-    <h1>Merry Christmas!</h1>
+    <h1>MERRY CHRISTMAS</h1>
 
-    <div id="tree"></div>
-
-    <div id="message">
-        ❄ Wishing You a Wonderful Christmas ❄
+    <div id="tree-container">
+        <div id="tree"></div>
     </div>
 
+    <div id="message">
+        ✦ Wishing You a Wonderful Christmas ✦
+    </div>
+
+    <div class="ground-glow"></div>
+
     <script>
-        // CREATE CHRISTMAS TREE
+
+        // ==========================================
+        // CHRISTMAS TREE DESIGN
+        // ==========================================
 
         const tree = document.getElementById("tree");
 
-        const colors = [
-            "#ff3333",
-            "#ffff44",
-            "#44ccff",
-            "#ff66cc",
-            "#ffffff"
+        const height = 25;
+        const width = height * 2 - 1;
+
+        const bulbs = [
+            "red",
+            "yellow",
+            "blue",
+            "orange",
+            "green"
         ];
 
-        let treeHTML = "";
+        let rows = [];
 
-        treeHTML += '<span class="star">       ★</span>\n';
+        function createTree() {
 
-        for (let i = 1; i <= 10; i++) {
+            rows = [];
 
-            let row = " ".repeat(10 - i);
+            // Tree star
+            rows.push(
+                ' '.repeat(height - 1) +
+                '<span class="star">✦</span>'
+            );
 
-            for (let j = 0; j < (i * 2 - 1); j++) {
+            // Tree branches
+            for (let i = 1; i <= height; i++) {
 
-                if (Math.random() < 0.12) {
+                let row = "";
 
-                    let color = colors[
-                        Math.floor(Math.random() * colors.length)
-                    ];
+                let spaces = height - i;
 
-                    row += `<span class="light" style="color:${color}">
-                            ●</span>`;
+                row += " ".repeat(spaces);
 
-                } else {
-                    row += "*";
+                for (let j = 0; j < (i * 2 - 1); j++) {
+
+                    let random = Math.random();
+
+                    if (random < 0.075) {
+
+                        let color = bulbs[
+                            Math.floor(Math.random() * bulbs.length)
+                        ];
+
+                        let delay = (Math.random() * 2).toFixed(2);
+                        let speed = (0.7 + Math.random() * 1.8).toFixed(2);
+
+                        row += `<span class="light ${color}"
+                            style="--delay:${delay}s; --speed:${speed}s">●</span>`;
+
+                    } else if (random < 0.17) {
+
+                        row += '<span class="dark-branch">✦</span>';
+
+                    } else if (random < 0.35) {
+
+                        row += '<span class="branch">+</span>';
+
+                    } else {
+
+                        row += '<span class="branch">*</span>';
+                    }
                 }
+
+                rows.push(row);
             }
 
-            treeHTML += row + "\n";
+            // Decorative bottom branches
+            rows.push(
+                " ".repeat(height - 3) +
+                '<span class="branch">/^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\</span>'
+            );
+
+            // Tree trunk
+            rows.push(
+                " ".repeat(height - 2) +
+                '<span class="trunk">|||||||</span>'
+            );
+
+            rows.push(
+                " ".repeat(height - 2) +
+                '<span class="trunk">|||||||</span>'
+            );
+
+            // Tree base
+            rows.push(
+                " ".repeat(height - 4) +
+                '<span class="trunk">[===============]</span>'
+            );
         }
 
-        treeHTML += "         |||\n";
-        treeHTML += "         |||\n";
-        treeHTML += "        [___]";
 
-        tree.innerHTML = treeHTML;
+        // ==========================================
+        // TREE BUILD ANIMATION
+        // ==========================================
+
+        function buildTree() {
+
+            tree.innerHTML = "";
+
+            let currentRow = rows.length - 1;
+
+            function addRow() {
+
+                if (currentRow < 0) {
+                    return;
+                }
+
+                const row = rows[currentRow];
+
+                const line = document.createElement("div");
+
+                line.innerHTML = row;
+
+                line.style.opacity = "0";
+                line.style.transform = "rotateX(90deg) scale(0.2)";
+                line.style.transformOrigin = "center center";
+                line.style.transition =
+                    "opacity 0.45s ease, transform 0.65s cubic-bezier(.2,.8,.3,1)";
+
+                tree.prepend(line);
+
+                requestAnimationFrame(() => {
+
+                    line.style.opacity = "1";
+                    line.style.transform = "rotateX(0deg) scale(1)";
+
+                });
+
+                currentRow--;
+
+                setTimeout(addRow, 85);
+            }
+
+            addRow();
+        }
 
 
-        // CREATE FALLING SNOW
+        createTree();
+        buildTree();
+
+
+        // ==========================================
+        // FALLING PIXEL SNOW
+        // ==========================================
 
         const canvas = document.getElementById("snow");
         const ctx = canvas.getContext("2d");
@@ -141,58 +351,81 @@
         let snowflakes = [];
 
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+
+            const ratio = window.devicePixelRatio || 1;
+
+            canvas.width = window.innerWidth * ratio;
+            canvas.height = window.innerHeight * ratio;
+
+            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
         }
 
         window.addEventListener("resize", resizeCanvas);
+
         resizeCanvas();
 
-        for (let i = 0; i < 150; i++) {
+        function createSnow() {
 
-            snowflakes.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 3 + 1,
-                speed: Math.random() * 2 + 0.5,
-                drift: Math.random() * 1 - 0.5
-            });
+            snowflakes = [];
+
+            for (let i = 0; i < 130; i++) {
+
+                snowflakes.push({
+
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+
+                    size: Math.random() * 2 + 1,
+
+                    speed: Math.random() * 0.45 + 0.2,
+
+                    drift: Math.random() * 0.3 - 0.15,
+
+                    opacity: Math.random() * 0.55 + 0.25
+
+                });
+            }
         }
+
+        createSnow();
 
         function animateSnow() {
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = "white";
+            ctx.clearRect(
+                0,
+                0,
+                window.innerWidth,
+                window.innerHeight
+            );
 
             snowflakes.forEach(flake => {
 
-                ctx.beginPath();
+                ctx.fillStyle =
+                    `rgba(255, 250, 235, ${flake.opacity})`;
 
-                ctx.arc(
-                    flake.x,
-                    flake.y,
-                    flake.radius,
-                    0,
-                    Math.PI * 2
+                ctx.fillRect(
+                    Math.round(flake.x),
+                    Math.round(flake.y),
+                    flake.size,
+                    flake.size
                 );
-
-                ctx.fill();
 
                 flake.y += flake.speed;
                 flake.x += flake.drift;
 
-                if (flake.y > canvas.height) {
+                if (flake.y > window.innerHeight) {
+
                     flake.y = -5;
-                    flake.x = Math.random() * canvas.width;
+                    flake.x = Math.random() * window.innerWidth;
+
                 }
 
-                if (flake.x > canvas.width) {
+                if (flake.x > window.innerWidth) {
                     flake.x = 0;
                 }
 
                 if (flake.x < 0) {
-                    flake.x = canvas.width;
+                    flake.x = window.innerWidth;
                 }
 
             });
